@@ -1,0 +1,85 @@
+﻿@model PagedList.IPagedList<ExpensesManagementProject.Models.Expense>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+@{
+    ViewBag.Title = "Expenses";
+}
+
+<h2>Expenses</h2>
+
+<p>
+    @Html.ActionLink("Add New", "Create")
+</p>
+@using (Html.BeginForm("Index", "Expense", FormMethod.Get))
+{
+<p>
+    Find by name: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+    <input type="submit" value="Search" /> |
+    @Html.ActionLink("Back to full List", "Index")
+    @Html.TextBox("DateIn")
+    @Html.TextBox("DateOut")
+    @*<div class="form-group">
+            @Html.LabelFor(model => model.DateIn, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.DateIn, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.DateIn, "", new { @class = "text-danger" })
+            </div>
+        </div>*@
+</p>
+}
+<table class="table">
+    <tr>
+        <th>
+            Name
+        </th>
+        <th>
+            @Html.ActionLink("Cost (ron)", "Index", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
+        </th>
+        <th>
+            @Html.ActionLink("PaymentDate", "Index", new { sortOrder = ViewBag.DateSortParm, currentFilter = ViewBag.CurrentFilter })
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Cost)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PaymentDate)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                @Html.ActionLink("Remove", "Delete", new { id = item.ID })
+            </td>
+        </tr>
+    }
+
+</table>
+
+<h4>Total Cost: @ViewBag.TotalS RON</h4>
+<br>
+
+
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+
+
+@Html.PagedListPager(Model, page => Url.Action("Index",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+
+@if (@ViewBag.OK == 1)
+{
+    <h4>Total savings: @ViewBag.Difference RON / @ViewBag.TotalW RON (@ViewBag.Percentage %)</h4>
+}
+else
+{
+    <h5> @Html.ActionLink("Add", "Create", "Income") a source of Income to see your Savings.</h5>
+}

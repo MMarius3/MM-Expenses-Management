@@ -1,0 +1,67 @@
+﻿@model PagedList.IPagedList<ExpensesManagementProject.Models.Income>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+@{
+    ViewBag.Title = "Incomes";
+}
+
+<h2>Incomes</h2>
+
+<p>
+    @Html.ActionLink("Add New", "Create")
+</p>
+@using (Html.BeginForm("Index", "Income", FormMethod.Get))
+{
+<p>
+    Find by name: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+    <input type="submit" value="Search" /> |
+    @Html.ActionLink("Back to full List", "Index")
+</p>
+}
+<table class="table">
+    <tr>
+        <th>
+            Source
+        </th>
+        <th>
+            @Html.ActionLink("Worth (ron)", "Index", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
+        </th>
+        <th>
+            @Html.ActionLink("WageDate", "Index", new { sortOrder = ViewBag.DateSortParm, currentFilter = ViewBag.CurrentFilter })
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Worth)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.WageDate)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                @Html.ActionLink("Remove", "Delete", new { id = item.ID })
+            </td>
+        </tr>
+    }
+
+</table>
+
+
+<h4>Total Worth: @ViewBag.CurrentSum RON</h4>
+<br>
+
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+
+
+@Html.PagedListPager(Model, page => Url.Action("Index",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
